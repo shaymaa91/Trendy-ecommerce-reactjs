@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const Navbar = ({ userInfo,setUserInfo }) => {
+export const Navbar = ({ userInfo, setUserInfo }) => {
     return (
         <>
 
@@ -30,10 +30,10 @@ export const Navbar = ({ userInfo,setUserInfo }) => {
 
                         <div className="buttons ms-auto">
                             {!userInfo ? <><Link to='/login' className='btn btn-outline-dark ms-2'> <i className="fa fa-sign-in" aria-hidden="true"></i> Login</Link>
-                                <Link to='' className='btn btn-outline-dark ms-2'> <i className="fa fa-user-plus" aria-hidden="true"></i> Register</Link></> : <div className='m-auto'><Link to='/cart' className='btn btn-outline-dark ms-2 '> <i className="fa fa-shopping-cart" aria-hidden="true"></i> Cart(0)</Link>
-                                <Link to='/login' onClick={()=>{setUserInfo(null);localStorage.removeItem('token')}} className='btn btn-outline-dark ms-2 '> <i className="fa fa-sign-out" aria-hidden="true"></i> Logout</Link></div>
-                                }
-                            
+                                <Link to='/register' className='btn btn-outline-dark ms-2'> <i className="fa fa-user-plus" aria-hidden="true"></i> Register</Link></> : <div className='m-auto'><Link to='/cart' className='btn btn-outline-dark ms-2 '> <i className="fa fa-shopping-cart" aria-hidden="true"></i> Cart(0)</Link>
+                                <Link to='/login' onClick={() => { setUserInfo(null); localStorage.removeItem('token') }} className='btn btn-outline-dark ms-2 '> <i className="fa fa-sign-out" aria-hidden="true"></i> Logout</Link></div>
+                            }
+
                         </div>
 
                     </div>

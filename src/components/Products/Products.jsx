@@ -12,8 +12,6 @@ export const Products = () => {
     let [filter, setFilter] = useState(data);
 
 
-
-
     const filterProducts = (cat) => {
         let newProdList = [...data];
         newProdList = newProdList.filter((prod) => {
@@ -24,9 +22,7 @@ export const Products = () => {
 
     }
 
-    const setFilterOnPageChange = (newData) => {
-        setFilter(newData)
-    }
+
 
     //stuff for pagination
     let [currentPage, setCurrentPage] = useState(1);
@@ -54,10 +50,6 @@ export const Products = () => {
     }, []);
 
 
-
-
-
-
     const Loading = () => {
         return (
             <>
@@ -65,21 +57,18 @@ export const Products = () => {
                     <Skeleton height={320} animation="wave" />
                 </div>
                 <div className="col-md-3">
-                    <Skeleton height={320} animation="wave"/>
+                    <Skeleton height={320} animation="wave" />
                 </div>
                 <div className="col-md-3">
-                    <Skeleton height={320} animation="wave"/>
+                    <Skeleton height={320} animation="wave" />
                 </div>
                 <div className="col-md-3">
-                    <Skeleton height={320} animation="wave"/>
+                    <Skeleton height={320} animation="wave" />
                 </div>
 
             </>
         )
     }
-
-
-
 
 
     const ShowProducts = () => {

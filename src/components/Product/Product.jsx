@@ -4,7 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 
 
 
-export const Product = () => {
+export const Product = ({addProductToCart}) => {
     let { id } = useParams();
     const [prodData, setProdData] = useState([]);
     let [loader, setLoader] = useState(false);
@@ -40,7 +40,7 @@ export const Product = () => {
             </>)
     }
 
-    const ProductDetails = () => {
+    const ProductDetails = ({addProductToCart}) => {
         return (
             <>
                 <div className="col-md-6 mt-5  ">
@@ -56,7 +56,7 @@ export const Product = () => {
                     <p className='lead fw-bold'><i className="fa fa-star-half-o" aria-hidden="true"></i>{prodData.rating && prodData.rating.rate} Likes <i className="fa fa-thumbs-o-up" aria-hidden="true"></i></p>
                     <h3 className='display-6 fw-bolder'>$ {prodData.price}</h3>
                     <p className='lead text-black-50'>{prodData.description}</p>
-                    <Link className='btn btn-outline-danger' to="/cart">Add To Cart</Link>
+                    <Link className='btn btn-outline-danger' to="/cart" onClick={()=>{addProductToCart(prodData)}}>Add To Cart</Link>
                     <Link className='btn btn-danger ms-3' to="/cart">Go To Cart</Link>
                 </div>
             </>)
@@ -65,7 +65,7 @@ export const Product = () => {
         <>
             <div className="container">
                 <div className="row">
-                    {loader ? <Loader /> : <ProductDetails />}
+                    {loader ? <Loader /> : <ProductDetails addProductToCart={addProductToCart}/>}
                 </div>
             </div>
 

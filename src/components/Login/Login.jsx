@@ -1,33 +1,71 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { json } from 'react-router-dom';
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useState } from "react";
+import { Input } from "../Input/Input";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { BASE_URL } from "../../constants/urls";
 
-export const Login = ({setUserData}) => {
-
+export const Login = ({setUserInfo}) => {
     const goHome = useNavigate();
+    let [loading, setLoading] = useState(false);
+    let inputFields = [
+        {
+            name: "email",
+            type: "email",
+            label: "Email Address",
+            placeholder: "name@example.com",
+        },
+        {
+            name: "password",
+            type: "password",
+            label: "Password",
+            placeholder: "Enter your password",
+        },
+    ];
 
-    let [user, setUser] = useState({
-        email: "",
-        password: ""
-    });
-
+    let [user, setUser] = useState({ email: "", password: "" });
     let [frontErrors, setFrontErrors] = useState([]);
     let [backErrors, setBackErrors] = useState("");
     let [token, setToken] = useState();
 
+    console.log(user);
+    console.log(frontErrors);
     const handleChange = (e) => {
         let myuser = { ...user, [e.target.name]: e.target.value };
         setUser(myuser);
-    }
+    };
+
+    //validate form data using Joi library on submit
+    const Joi = require("joi");
+    const validateFormDate = () => {
+        const schema = Joi.object({
+            email: Joi.string().email({
+                minDomainSegments: 2,
+                tlds: { allow: ["com", "net"] },
+            }),
+            password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+        });
+
+        const result = schema.validate({ ...user }, { abortEarly: false });
+
+        return result;
+    };
 
     //function to validate login user from backend side
+    //this data set fixed temporary till we have a better API
     const backValidate = async () => {
-        let response = await axios.post('https://fakestoreapi.com/auth/login', { username: "mor_2314", password: "83r5^_" });
-        return (response);
-    }
+        setLoading(true);
+        let response = await axios.post(`${BASE_URL}/auth/login`, {
+            email: user.email,
+            password: user.password
+        });
+        setLoading(false);
+        return response;
 
-    const handleForm = async (e) => {
+    };
+
+    const submitLogin = async (e) => {
         e.preventDefault();
         setFrontErrors([]);
         //frontend side validation
@@ -36,74 +74,90 @@ export const Login = ({setUserData}) => {
         if (validateRes.error) {
             //set front end errors
             setFrontErrors(validateRes.error.details);
-
         } else {
             //make request to validate user from backend side then set user info and token
 
-            const backres = await backValidate();
-            
-            if (backres.status == 200) {
-                let { data } = backres;
-                setToken(data.token);
-                localStorage.setItem('token', data.token);
-                setUserData();
-                goHome('/home');
+
+            try {
+                const backres = await backValidate();
+                if (backres.status == 200) {
+                    let { data } = backres;
+
+                    setToken(data.token);
+                    console.log(data);
+                    localStorage.setItem("token", data.token);
+                    setUserInfo(data.user);
+                    toast.success("Login Success");
+                    goHome("/home");
+                }
+            } catch (error) {
+                console.log(Object.keys(error), error.response.data.msg);
+                setBackErrors(error.response.data.msg);
+                setLoading(false);
             }
 
         }
-    }
-
-    //validate form data using Joi library on submit
-    const Joi = require('joi');
-    const validateFormDate = () => {
-        const schema = Joi.object({
-            email: Joi.string()
-                .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-            password: Joi.string()
-                .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-        });
-
-        const result = schema.validate({ ...user }, { abortEarly: false });
-
-        return result;
-    }
-
-
+    };
     return (
         <>
-            <div className='container'>
-                <div className="row justify-content-center mt-5 pt-5">
+            <div className="login-bg vh-100">
+                <div className="mx-3 row justify-content-center ">
                     <div className="col-md-6">
-                        <h1 className='text-center mb-5 shadow-sm'>Login</h1>
-                        {
-                            frontErrors.map((e, index) => {
-
-                                return (<div key={index} className='alert alert-danger '>{e.message}</div>)
-                            })
+                        <h1 className="fs-2 fw-bold text-center my-5">Login</h1>
+                        {frontErrors.map((e, index) => {
+                            return (
+                                <div
+                                    key={index}
+                                    className="alert alert-danger "
+                                >
+                                    {e.message}
+                                </div>
+                            );
+                        })}
+                        {backErrors ? <div
+                            className="alert alert-danger "
+                        >
+                            {backErrors}
+                        </div> : ''
                         }
-                        <form onSubmit={handleForm}>
-                            <div className="mb-3 row">
-                                <label htmlFor="staticEmail" className="col-sm-2 col-form-label">Email</label>
-                                <div className="col-sm-10">
-                                    <input value={user.email} onChange={handleChange} name="email" type="email" className="form-control-plaintext" id="staticEmail" placeholder='name@example.com' />
-                                </div>
-                            </div>
-                            <div className="mb-3 row">
-                                <label htmlFor="inputPassword" className="col-sm-2 col-form-label">Password</label>
-                                <div className="col-sm-10">
-                                    <input value={user.password} onChange={handleChange} name="password" type="password" className="form-control" id="inputPassword" />
-                                </div>
-                            </div>
-                            <div className="d-grid gap-2">
-                                <button className="btn btn-dark" type="submit">Sign In</button>
-                            </div>
+                        <form
+                            className="d-flex flex-column"
+                            onSubmit={submitLogin}
+                        >
+                            {inputFields.map((field) => {
+                                return (
+                                    <Input
+                                        key={field.name}
+                                        name={field.name}
+                                        placeholder={field.placeholder}
+                                        label={field.label}
+                                        type={field.type}
+                                        handleChange={handleChange}
+                                    />
+                                );
+                            })}
 
+                            <button
+                                type="submit"
+                                className="btn btn-outline-dark"
+                            >
+                                {loading ? <i className="fa fa-spinner fa-spin" aria-hidden="true"></i> : 'Sign In'}
+                            </button>
+                            <p className="text-center my-3">
+                                Don't you have an account ?{" "}
+                                <span>
+                                    <Link
+                                        className="text-dark fw-bold"
+                                        to="/register"
+                                    >
+                                        Register
+                                    </Link>
+                                </span>
+                            </p>
                         </form>
                     </div>
                 </div>
             </div>
-
         </>
-
-    )
-}
+    );
+};
