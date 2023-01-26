@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { BASE_URL } from "../../constants/urls";
 
-export const Login = ({setUserInfo}) => {
+export const Login = ({setUserData}) => {
     const goHome = useNavigate();
     let [loading, setLoading] = useState(false);
     let inputFields = [
@@ -86,7 +86,7 @@ export const Login = ({setUserInfo}) => {
                     setToken(data.token);
                     console.log(data);
                     localStorage.setItem("token", data.token);
-                    setUserInfo(data.user);
+                    setUserData(data.user);
                     toast.success("Login Success");
                     goHome("/home");
                 }

@@ -12,9 +12,8 @@ import { TestPagination } from './../TestPagination/TestPagination';
 import { Login } from './../Login/Login';
 import { NotFound } from '../NotFound/NotFound';
 import { TableB } from '../Table/Table';
-import { useState, createContext } from 'react';
+import { useState } from 'react';
 import jwtDecode from 'jwt-decode';
-import CartContext from '../Context/CartContext'
 import { StyledCompTest } from './../StyledCompTest/StyledCompTest';
 import { Register } from './../Register/Register';
 
@@ -24,14 +23,13 @@ function App() {
 
   let [userInfo, setUserInfo] = useState(null);
   console.log(userInfo)
+
   const setUserData = () => {
     let token = localStorage.getItem('token');
     let decodToken = jwtDecode(token);
     setUserInfo(decodToken.user)
   }
 
-
-  let [cartList, setCartList] = useState([]);
 
   const addProductToCart = (prodData) => {
     console.log("prodData",prodData)
@@ -40,8 +38,8 @@ function App() {
   return (
 
     <>
-      <CartContext.Provider value={cartList}>
-        <Navbar userInfo={userInfo} setUserInfo={setUserInfo} />
+     
+        <Navbar userInfo={userInfo} setUserData={setUserData} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
@@ -53,7 +51,7 @@ function App() {
 
           <Route path="/cart" element={<Cart />} />
           <Route path="/test" element={<TestPagination />} />
-          <Route path="/login" element={<Login setUserInfo={setUserInfo} />} />
+          <Route path="/login" element={<Login setUserData={setUserData} />} />
           <Route path="/register" element={<Register />} />
 
           <Route path="/table" element={<TableB />} />
@@ -62,7 +60,6 @@ function App() {
 
 
         </Routes>
-      </CartContext.Provider>
 
 
     </>
