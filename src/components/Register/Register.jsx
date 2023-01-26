@@ -4,7 +4,7 @@ import { Input } from "../Input/Input";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { BASE_URL } from "d:/from desktop/2023/Voyage24/v42-geckos-team-16/app/src/constants/urls";
+import { BASE_URL } from "../../constants/urls";
 
 
 export const Register = () => {
